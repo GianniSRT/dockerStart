@@ -1,0 +1,36 @@
+services:
+  web:
+    # Construit une image à partir du Dockerfile
+    build: .
+    ports:
+      - "8080:80" # Accès au site via http://localhost:8080
+    volumes:
+      - ./boutique-en-ligne:/var/www/html
+
+  phpmyadmin:
+    image: phpmyadmin:5.2.1
+    restart: always
+    ports:
+      - 8082:80 # Accès à php myAdmin via http://localhost:8082
+    # Autoriser la connexion à n’importe quel serveur MySQL"
+    environment:
+      - PMA_ARBITRARY=1
+
+  mysql:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: boutique_en_ligne
+      MYSQL_USER: gianni
+      MYSQL_PASSWORD: gianni7
+    
+    ports:
+      - "3307:3306"
+    
+    volumes:
+      - db-data:/var/lib/mysql
+      # Ci dessous j'envoie le fichier sql de la bdd de ma boutique que j'ai rangé localement dans le dossier "db", vers le dossier spécifiquement dédié à ça dans mon contener docker
+      - ./db:/docker-entrypoint-initdb.d
+
+volumes:
+  db-data:
